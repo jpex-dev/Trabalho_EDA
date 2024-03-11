@@ -1,9 +1,10 @@
-
 #include "header.h"
-#include <stdio.h>
-
 
 int main() {
-	lerFicheiro();
-	return 0;
+    Ficheiro* ficheiro = CriaFicheiro();
+    lerFicheiro(ficheiro);
+    //escreverFicheiro(ficheiro);
+    //LimparEspacoFicheiro(ficheiro);
+    printf("Dados lidos e escritos com sucesso.\n");
+    return 0;
 }
