@@ -1,10 +1,12 @@
+#include <stdio.h>
 #include "header.h"
 
 int main() {
-    Ficheiro* ficheiro = CriaFicheiro();
-    lerFicheiro(ficheiro);
-    //escreverFicheiro(ficheiro);
-    //LimparEspacoFicheiro(ficheiro);
-    printf("Dados lidos e escritos com sucesso.\n");
+    // Exemplo de utilização
+
+
+    Node * matrix = CriaMatriz();
+
+
     return 0;
 }

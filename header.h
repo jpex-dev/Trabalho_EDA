@@ -1,26 +1,21 @@
-#pragma once
 #ifndef HEADER_H
 #define HEADER_H
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#define MAX_LINE_LENGTH 100 // Defina o comprimento máximo da linha conforme necessário
-
-typedef struct Ficheiro {
-    int linhas;
-    int colunas;
-    int** matriz;
-} Ficheiro;
-
+// Definição da estrutura de dados para um nó da lista ligada
 typedef struct Node {
-    int dados;
-    struct Node* proximo;
+    int** matriz;
+    struct Node* next;
 } Node;
 
-Ficheiro* CriaFicheiro();
-void LimparEspacoFicheiro(Ficheiro* ficheiro);
-void lerFicheiro(Ficheiro* ficheiro);
-void escreverFicheiro(const Ficheiro* ficheiro);
+// Definição da estrutura de dados para a matriz
+
+// Protótipos das funções
+Node* NovaMatriz( int linhas, int colunas);
+Node* CriaMatriz();
+//void setValue(Matrix* matrix, int row, int col, int value);
+//void insertRow(Matrix* matrix, int row);
+//void deleteRow(Matrix* matrix, int row);
+//void printMatrix(Matrix* matrix);
+void freeMatriz(Node* matriz);
 
 #endif
