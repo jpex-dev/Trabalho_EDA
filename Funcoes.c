@@ -1,104 +1,103 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "header.h"
-#include <stdbool.h>
 
-#define MAX_NUMBERS 1000
-
-// Função para criar um novo nó na lista ligada
-/**
- * .
- * 
- * \param linhas
- * \param colunas
- * \return 
- */
-Matriz* CriaElementoMatriz(int v) {
-    Matriz* aux = (Matriz*)malloc(sizeof(Matriz));
-    if (aux == NULL) return NULL;
-    aux->next = NULL;
-    aux->valor = v;
-    return aux;
+ElementoMatriz* CriaElementoMatriz(int valor) {
+    ElementoMatriz* novo = (ElementoMatriz*)malloc(sizeof(ElementoMatriz));
+    novo->valor = valor;
+    novo->proximo = NULL;
+    return novo;
 }
-Matriz* InsereNaMatriz(Matriz* ini, Matriz* novo) {
-    if (ini == NULL) ini = novo;
-    else
-    {
-        novo->next = ini;
-        ini = novo;
+
+Matriz* InsereNaMatriz(Matriz* matriz, int linha, int coluna, ElementoMatriz* novo) {
+    if (matriz->elementos[linha][coluna] == NULL) {
+        matriz->elementos[linha][coluna] = novo;
     }
-    return ini;
+    else {
+        ElementoMatriz* atual = matriz->elementos[linha][coluna];
+        while (atual->proximo != NULL) {
+            atual = atual->proximo;
+        }
+        atual->proximo = novo;
+    }
+    return matriz;
 }
 
-Matriz* NovaMatriz(int linhas, int colunas,char* filename) {
-    int numeros[MAX_NUMBERS];
-    int contador = 0;
+Matriz* NovaMatriz(const int linhas, const int colunas, char* filename) {
+    FILE* file = NULL;
+    if (filename != NULL)
+        file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return NULL;
+    }
+
+    Matriz* matriz = (Matriz*)malloc(sizeof(Matriz));
+    matriz->linhas = linhas;
+    matriz->colunas = colunas;
+    matriz->elementos = (ElementoMatriz***)malloc(sizeof(ElementoMatriz**) * linhas);
+    for (int i = 0; i < linhas; i++) {
+        matriz->elementos[i] = (ElementoMatriz**)calloc(colunas, sizeof(ElementoMatriz*));
+    }
+
     int temp;
-    while (fread(&temp, sizeof(int), 1, filename) == 1 && contador < MAX_NUMBERS) {
-        numeros[contador++] = temp;
-        // Ignora o ';' após o número
-        fseek(filename, 1, SEEK_CUR);
+    for (int i = 0; i < linhas; i++) {
+        for (int j = 0; j < colunas; j++) {
+            if (filename != NULL && fscanf(file, "%d;", &temp) != 1) {
+                printf("Erro ao ler o arquivo.\n");
+                return NULL;
+            }
+            ElementoMatriz* novo = CriaElementoMatriz(temp);
+            matriz = InsereNaMatriz(matriz, i, j, novo);
+        }
     }
 
+    if (file != NULL)
+        fclose(file);
+    return matriz;
 }
 
-
-
-
-// Função para carregar dados de um arquivo de texto para a matriz
 Matriz* lerFicheiro(char* filename) {
+    int num_linhas = 1;
+    int num_colunas = 1;
+
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
         fprintf(stderr, "Erro ao abrir o arquivo.\n");
         exit(EXIT_FAILURE);
     }
-    char line[1024];
-    int num_linhas = 0; // Inicializa o número de linhas como 0
-    int num_colunas = 0; // Inicializa o número de colunas como 0
 
-    // Lê cada linha do arquivo
+    // Conta o número de linhas e colunas no arquivo
     int ch;
     while ((ch = fgetc(file)) != EOF) {
         if (ch == '\n') {
             num_linhas++;
-            num_colunas++;
-
+            num_colunas ++;
         }
         else if (ch == ';') {
             num_colunas++;
         }
     }
     num_colunas = num_colunas / num_linhas;
-
     fclose(file);
 
-    Matriz* matriz = NovaMatriz(num_linhas, num_colunas,filename);
-
-    printf("%d\n", num_linhas);
-    printf("%d\n", num_colunas);
-
+    // Cria a matriz com o tamanho contado
+    Matriz* matriz = NovaMatriz(num_linhas, num_colunas, filename);
     return matriz;
 }
 
-//antes de ler variaveis fazer o malloc da mesma
-
-//PEssoa* inicio = Null;
-// inicio = Insere na lista (inicio,aux)
-// usar cria pessoa ao ler o ficheiro, para cada char ser um espaço novo
-// ter uma funçao de ler e outra de gravar, o de ler vai ter o inserir na matriz
-// 
-// Função para alterar um valor na matriz
-void AdicionarValores(Matriz matrix) {
-        
-}
-bool Grava(Matriz* i, char* f) {
-    if ((i == NULL) || (strlen(f) == 0))return(false);
-    !feof(f);
-
-}
-
-//// Função para liberar a memória alocada pela matriz
 void freeMatriz(Matriz* matriz) {
+    for (int i = 0; i < matriz->linhas; i++) {
+        for (int j = 0; j < matriz->colunas; j++) {
+            ElementoMatriz* atual = matriz->elementos[i][j];
+            while (atual != NULL) {
+                ElementoMatriz* temp = atual;
+                atual = atual->proximo;
+                free(temp);
+            }
+        }
+        free(matriz->elementos[i]);
+    }
+    free(matriz->elementos);
     free(matriz);
 }

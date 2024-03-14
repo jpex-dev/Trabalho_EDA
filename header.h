@@ -1,24 +1,27 @@
 #ifndef HEADER_H
 #define HEADER_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
 // Definição da estrutura de dados para um nó da lista ligada
+typedef struct ElementoMatriz {
+    int valor;
+    struct ElementoMatriz* proximo;
+} ElementoMatriz;
+
 typedef struct Matriz {
-    int* valor;
-    struct Matriz* next;
+    ElementoMatriz*** elementos;
+    int linhas;
+    int colunas;
 } Matriz;
 
-
-typedef struct MatrizFile {
-    int valor;
-};
-
-// Definição da estrutura de dados para a matriz
-
 // Protótipos das funções
-Matriz* NovaMatriz( int linhas, int colunas,char* filename);
+Matriz* NovaMatriz(const int linhas, const int colunas, char* filename);
 Matriz* lerFicheiro(char* filename);
-Matriz* InsereNaMatriz(Matriz* ini, Matriz* novo);
-Matriz* lerFicheiro(char* file);
-Matriz* CriaElementoMatriz(int valor);
+Matriz* InsereNaMatriz(Matriz* matriz, int linha, int coluna, ElementoMatriz* novo);
+ElementoMatriz* CriaElementoMatriz(int valor);
+void freeMatriz(Matriz* matriz);
 
 #endif
