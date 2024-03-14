@@ -2,20 +2,23 @@
 #define HEADER_H
 
 // Definição da estrutura de dados para um nó da lista ligada
-typedef struct Node {
-    int** matriz;
-    struct Node* next;
-} Node;
+typedef struct Matriz {
+    int* valor;
+    struct Matriz* next;
+} Matriz;
+
+
+typedef struct MatrizFile {
+    int valor;
+};
 
 // Definição da estrutura de dados para a matriz
 
 // Protótipos das funções
-Node* NovaMatriz( int linhas, int colunas);
-Node* CriaMatriz();
-//void setValue(Matrix* matrix, int row, int col, int value);
-//void insertRow(Matrix* matrix, int row);
-//void deleteRow(Matrix* matrix, int row);
-//void printMatrix(Matrix* matrix);
-void freeMatriz(Node* matriz);
+Matriz* NovaMatriz( int linhas, int colunas,char* filename);
+Matriz* lerFicheiro(char* filename);
+Matriz* InsereNaMatriz(Matriz* ini, Matriz* novo);
+Matriz* lerFicheiro(char* file);
+Matriz* CriaElementoMatriz(int valor);
 
 #endif

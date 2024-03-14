@@ -2,40 +2,53 @@
 #include <stdlib.h>
 #include <string.h>
 #include "header.h"
+#include <stdbool.h>
+
+#define MAX_NUMBERS 1000
 
 // Função para criar um novo nó na lista ligada
-Node* NovaMatriz(int linhas, int colunas) {
-    Node* matriz = (Node*)malloc(sizeof(Node));
-    if (matriz == NULL) {
-        fprintf(stderr, "Erro ao alocar memória para a matriz.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // Aloca memória para as linhas da matriz
-    matriz->matriz = (int**)malloc(linhas * sizeof(int*));
-    if (matriz->matriz == NULL) {
-        fprintf(stderr, "Erro ao alocar memória para as linhas da matriz.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // Aloca memória para as colunas de cada linha da matriz e inicializa com zero
-    for (int i = 0; i < linhas; i++) {
-        matriz->matriz[i] = (int*)malloc(colunas * sizeof(int));
-        if (matriz->matriz[i] == NULL) {
-            fprintf(stderr, "Erro ao alocar memória para as colunas da matriz.\n");
-            exit(EXIT_FAILURE);
-        }
-        for (int j = 0; j < colunas; j++) {
-            matriz->matriz[i][j] = 0;
-        }
-    }
-
-    matriz->next = NULL;
-    return matriz;
+/**
+ * .
+ * 
+ * \param linhas
+ * \param colunas
+ * \return 
+ */
+Matriz* CriaElementoMatriz(int v) {
+    Matriz* aux = (Matriz*)malloc(sizeof(Matriz));
+    if (aux == NULL) return NULL;
+    aux->next = NULL;
+    aux->valor = v;
+    return aux;
 }
+Matriz* InsereNaMatriz(Matriz* ini, Matriz* novo) {
+    if (ini == NULL) ini = novo;
+    else
+    {
+        novo->next = ini;
+        ini = novo;
+    }
+    return ini;
+}
+
+Matriz* NovaMatriz(int linhas, int colunas,char* filename) {
+    int numeros[MAX_NUMBERS];
+    int contador = 0;
+    int temp;
+    while (fread(&temp, sizeof(int), 1, filename) == 1 && contador < MAX_NUMBERS) {
+        numeros[contador++] = temp;
+        // Ignora o ';' após o número
+        fseek(filename, 1, SEEK_CUR);
+    }
+
+}
+
+
+
+
 // Função para carregar dados de um arquivo de texto para a matriz
-Node* CriaMatriz() {
-    FILE* file = fopen("dados.txt", "r");
+Matriz* lerFicheiro(char* filename) {
+    FILE* file = fopen(filename, "r");
     if (file == NULL) {
         fprintf(stderr, "Erro ao abrir o arquivo.\n");
         exit(EXIT_FAILURE);
@@ -60,7 +73,7 @@ Node* CriaMatriz() {
 
     fclose(file);
 
-    Node* matriz = NovaMatriz(num_linhas, num_colunas);
+    Matriz* matriz = NovaMatriz(num_linhas, num_colunas,filename);
 
     printf("%d\n", num_linhas);
     printf("%d\n", num_colunas);
@@ -68,60 +81,24 @@ Node* CriaMatriz() {
     return matriz;
 }
 
+//antes de ler variaveis fazer o malloc da mesma
+
+//PEssoa* inicio = Null;
+// inicio = Insere na lista (inicio,aux)
+// usar cria pessoa ao ler o ficheiro, para cada char ser um espaço novo
+// ter uma funçao de ler e outra de gravar, o de ler vai ter o inserir na matriz
+// 
 // Função para alterar um valor na matriz
-void AdicionarValores(Node* matrix) {
+void AdicionarValores(Matriz matrix) {
         
 }
+bool Grava(Matriz* i, char* f) {
+    if ((i == NULL) || (strlen(f) == 0))return(false);
+    !feof(f);
 
-//// Função para inserir uma nova linha na matriz
-//void insertRow(Matrix* matrix, int row) {
-//    if (row < 0 || row > matrix->num_rows) {
-//        fprintf(stderr, "Posição inválida para inserção.\n");
-//        exit(EXIT_FAILURE);
-//    }
-//    Node** new_rows = (Node**)malloc((matrix->num_rows + 1) * sizeof(Node*));
-//    if (new_rows == NULL) {
-//        fprintf(stderr, "Erro ao alocar memória.\n");
-//        exit(EXIT_FAILURE);
-//    }
-//    for (int i = 0; i < row; i++) {
-//        new_rows[i] = matrix->rows[i];
-//    }
-//    new_rows[row] = NULL;
-//    for (int i = row; i < matrix->num_rows; i++) {
-//        new_rows[i + 1] = matrix->rows[i];
-//    }
-//    free(matrix->rows);
-//    matrix->rows = new_rows;
-//    matrix->num_rows++;
-//}
-//
-//// Função para remover uma linha da matriz
-//void deleteRow(Matrix* matrix, int row) {
-//    if (row < 0 || row >= matrix->num_rows) {
-//        fprintf(stderr, "Posição inválida para remoção.\n");
-//        exit(EXIT_FAILURE);
-//    }
-//    free(matrix->rows[row]);
-//    for (int i = row; i < matrix->num_rows - 1; i++) {
-//        matrix->rows[i] = matrix->rows[i + 1];
-//    }
-//    matrix->num_rows--;
-//}
-//
-//// Função para imprimir a matriz na consola
-//void printMatrix(Matrix* matrix) {
-//    for (int i = 0; i < matrix->num_rows; i++) {
-//        Node* current = matrix->rows[i];
-//        while (current != NULL) {
-//            printf("%d\t", current->value);
-//            current = current->next;
-//        }
-//        printf("\n");
-//    }
-//}
-//
+}
+
 //// Função para liberar a memória alocada pela matriz
-void freeMatriz(Node* matriz) {
+void freeMatriz(Matriz* matriz) {
     free(matriz);
 }
