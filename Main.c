@@ -23,7 +23,8 @@ int main() {
         }
         printf("\n");
     }
-
+    int maximo= CalculaSomaMaxima(matriz);
+    printf("\n\n%d", maximo);
     freeMatriz(matriz); // Libera a memória alocada pela matriz
 
     return 0;

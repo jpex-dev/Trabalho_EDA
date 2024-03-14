@@ -22,6 +22,7 @@ Matriz* NovaMatriz(const int linhas, const int colunas, char* filename);
 Matriz* lerFicheiro(char* filename);
 Matriz* InsereNaMatriz(Matriz* matriz, int linha, int coluna, ElementoMatriz* novo);
 ElementoMatriz* CriaElementoMatriz(int valor);
+int CalculaSomaMaxima(Matriz* matriz);
 void freeMatriz(Matriz* matriz);
 
 #endif

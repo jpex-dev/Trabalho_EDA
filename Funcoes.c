@@ -36,9 +36,13 @@ Matriz* NovaMatriz(const int linhas, const int colunas, char* filename) {
     matriz->linhas = linhas;
     matriz->colunas = colunas;
     matriz->elementos = (ElementoMatriz***)malloc(sizeof(ElementoMatriz**) * linhas);
+
+
     for (int i = 0; i < linhas; i++) {
         matriz->elementos[i] = (ElementoMatriz**)calloc(colunas, sizeof(ElementoMatriz*));
     }
+
+
 
     int temp;
     for (int i = 0; i < linhas; i++) {
@@ -58,6 +62,8 @@ Matriz* NovaMatriz(const int linhas, const int colunas, char* filename) {
 }
 
 Matriz* lerFicheiro(char* filename) {
+
+
     int num_linhas = 1;
     int num_colunas = 1;
 
@@ -67,7 +73,7 @@ Matriz* lerFicheiro(char* filename) {
         exit(EXIT_FAILURE);
     }
 
-    // Conta o número de linhas e colunas no arquivo
+
     int ch;
     while ((ch = fgetc(file)) != EOF) {
         if (ch == '\n') {
@@ -81,9 +87,79 @@ Matriz* lerFicheiro(char* filename) {
     num_colunas = num_colunas / num_linhas;
     fclose(file);
 
-    // Cria a matriz com o tamanho contado
     Matriz* matriz = NovaMatriz(num_linhas, num_colunas, filename);
     return matriz;
+}
+
+
+
+int CalculaSomaMaxima(Matriz* matriz) {
+    int somaMaxima = 0;
+
+    int** escolhidos = (int**)malloc(matriz->linhas * sizeof(int*));
+    for (int i = 0; i < matriz->linhas; i++) {
+        escolhidos[i] = (int*)malloc(matriz->colunas * sizeof(int));
+        for (int j = 0; j < matriz->colunas; j++) {
+            escolhidos[i][j] = 0;
+        }
+    }
+
+
+    for (int i = 0; i < matriz->linhas; i++) {
+        for (int j = 0; j < matriz->colunas; j++) {
+            if (!escolhidos[i][j]) {
+                int somaAtual = matriz->elementos[i][j]->valor;
+                escolhidos[i][j] = 1;
+                // Marca os elementos da linha e coluna como escolhidos
+                for (int k = 0; k < matriz->colunas; k++) {
+                    escolhidos[i][k] = 1;
+                }
+                for (int k = 0; k < matriz->linhas; k++) {
+                    escolhidos[k][j] = 1;
+                }
+
+                // Procura o próximo maior elemento disponível
+                int max = 0;
+                int max_i = -1;
+                int max_j = -1;
+                for (int l = 0; l < matriz->linhas; l++) {
+                    for (int m = 0; m < matriz->colunas; m++) {
+                        if (!escolhidos[l][m] && matriz->elementos[l][m]->valor > max) {
+                            max = matriz->elementos[l][m]->valor;
+                            max_i = l;
+                            max_j = m;
+                        }
+                    }
+                }
+                while (max_i != -1 && max_j != -1) {
+                    somaAtual += max;
+                    escolhidos[max_i][max_j] = 1;
+                    for (int k = 0; k < matriz->colunas; k++) {
+                        escolhidos[max_i][k] = 1;
+                    }
+                    for (int k = 0; k < matriz->linhas; k++) {
+                        escolhidos[k][max_j] = 1;
+                    }
+                    max = 0;
+                    max_i = -1;
+                    max_j = -1;
+                    for (int l = 0; l < matriz->linhas; l++) {
+                        for (int m = 0; m < matriz->colunas; m++) {
+                            if (!escolhidos[l][m] && matriz->elementos[l][m]->valor > max) {
+                                max = matriz->elementos[l][m]->valor;
+                                max_i = l;
+                                max_j = m;
+                            }
+                        }
+                    }
+                }
+                if (somaAtual > somaMaxima) {
+                    somaMaxima = somaAtual;
+                }
+            }
+        }
+    }
+    return somaMaxima;
 }
 
 void freeMatriz(Matriz* matriz) {
