@@ -96,71 +96,74 @@ Matriz* lerFicheiro(char* filename) {
 int CalculaSomaMaxima(Matriz* matriz) {
     int somaMaxima = 0;
 
-    int** escolhidos = (int**)malloc(matriz->linhas * sizeof(int*));
-    for (int i = 0; i < matriz->linhas; i++) {
-        escolhidos[i] = (int*)malloc(matriz->colunas * sizeof(int));
-        for (int j = 0; j < matriz->colunas; j++) {
-            escolhidos[i][j] = 0;
-        }
-    }
-
-
+    // Percorre todas as células da matriz
     for (int i = 0; i < matriz->linhas; i++) {
         for (int j = 0; j < matriz->colunas; j++) {
-            if (!escolhidos[i][j]) {
-                int somaAtual = matriz->elementos[i][j]->valor;
-                escolhidos[i][j] = 1;
-                // Marca os elementos da linha e coluna como escolhidos
-                for (int k = 0; k < matriz->colunas; k++) {
-                    escolhidos[i][k] = 1;
+            // Inicializa as células como não escolhidas
+            int** escolhidos = (int**)malloc(matriz->linhas * sizeof(int*));
+            for (int k = 0; k < matriz->linhas; k++) {
+                escolhidos[k] = (int*)malloc(matriz->colunas * sizeof(int));
+                for (int l = 0; l < matriz->colunas; l++) {
+                    escolhidos[k][l] = 0;
                 }
-                for (int k = 0; k < matriz->linhas; k++) {
-                    escolhidos[k][j] = 1;
-                }
+            }
 
-                // Procura o próximo maior elemento disponível
+            // Inicia a soma a partir da célula atual
+            int somaAtual = matriz->elementos[i][j]->valor;
+            escolhidos[i][j] = 1;
+
+            // Percorre as linhas e colunas marcando as células como escolhidas
+            for (int k = 0; k < matriz->linhas; k++) {
+                escolhidos[k][j] = 1;
+            }
+            for (int l = 0; l < matriz->colunas; l++) {
+                escolhidos[i][l] = 1;
+            }
+
+            // Calcula a soma máxima percorrendo a matriz e escolhendo a célula de maior valor não marcada
+            while (1) {
                 int max = 0;
                 int max_i = -1;
                 int max_j = -1;
-                for (int l = 0; l < matriz->linhas; l++) {
-                    for (int m = 0; m < matriz->colunas; m++) {
-                        if (!escolhidos[l][m] && matriz->elementos[l][m]->valor > max) {
-                            max = matriz->elementos[l][m]->valor;
-                            max_i = l;
-                            max_j = m;
+                for (int k = 0; k < matriz->linhas; k++) {
+                    for (int l = 0; l < matriz->colunas; l++) {
+                        if (!escolhidos[k][l] && matriz->elementos[k][l]->valor > max) {
+                            max = matriz->elementos[k][l]->valor;
+                            max_i = k;
+                            max_j = l;
                         }
                     }
                 }
-                while (max_i != -1 && max_j != -1) {
-                    somaAtual += max;
-                    escolhidos[max_i][max_j] = 1;
-                    for (int k = 0; k < matriz->colunas; k++) {
-                        escolhidos[max_i][k] = 1;
-                    }
-                    for (int k = 0; k < matriz->linhas; k++) {
-                        escolhidos[k][max_j] = 1;
-                    }
-                    max = 0;
-                    max_i = -1;
-                    max_j = -1;
-                    for (int l = 0; l < matriz->linhas; l++) {
-                        for (int m = 0; m < matriz->colunas; m++) {
-                            if (!escolhidos[l][m] && matriz->elementos[l][m]->valor > max) {
-                                max = matriz->elementos[l][m]->valor;
-                                max_i = l;
-                                max_j = m;
-                            }
-                        }
-                    }
+                if (max_i == -1 || max_j == -1) {
+                    break; // Não há mais células disponíveis para escolher
                 }
-                if (somaAtual > somaMaxima) {
-                    somaMaxima = somaAtual;
+                somaAtual += max;
+                escolhidos[max_i][max_j] = 1;
+                // Marca as células na mesma linha e coluna como escolhidas
+                for (int k = 0; k < matriz->linhas; k++) {
+                    escolhidos[k][max_j] = 1;
+                }
+                for (int l = 0; l < matriz->colunas; l++) {
+                    escolhidos[max_i][l] = 1;
                 }
             }
+
+            // Atualiza a soma máxima se a soma atual for maior
+            if (somaAtual > somaMaxima) {
+                somaMaxima = somaAtual;
+            }
+
+            // Libera a memória alocada para a matriz de escolhas
+            for (int k = 0; k < matriz->linhas; k++) {
+                free(escolhidos[k]);
+            }
+            free(escolhidos);
         }
     }
+
     return somaMaxima;
 }
+
 
 void freeMatriz(Matriz* matriz) {
     for (int i = 0; i < matriz->linhas; i++) {
