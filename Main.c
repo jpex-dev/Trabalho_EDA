@@ -6,6 +6,7 @@
 int main() {
     // Abre o arquivo para leitura
     char* arquivo = "dados.txt";
+ 
     Matriz* matriz = lerFicheiro(arquivo);
     if (matriz == NULL) {
         printf("Erro ao ler o arquivo.\n");
