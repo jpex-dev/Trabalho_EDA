@@ -66,5 +66,12 @@ int CalculaSomaMaxima(Matriz* matriz);
  */
 void freeMatriz(Matriz* matriz);
 
+
+/**
+ * Escreve um ficheiro na matriz, contendo assim um parametro bool para decidir se vai ser coluna ou linha
+ */
 Matriz* escreveNaMatriz(Matriz* matriz, const char* filename, bool tipo_coluna_ou_linha, int array[]);
+
+
+
 

@@ -4,6 +4,8 @@
  *
  * \author peixoto
  * \date   March 2024
+ * 
+ * Explicação de cada função resumida no header.h
  *********************************************************************/
 
  // Esta linha é usada para poder deixar executar mesmo tendo vulnerabilidades tais como scanf....
@@ -14,14 +16,16 @@
 #include <stdlib.h>
 
 /**
- * .
+ * 
  * 
  * @param valor
  * @return 
  */
 ElementoMatriz* CriaElementoMatriz(int valor) {
+    //aloca a memoria necessaria para esse elemento da matriz
     ElementoMatriz* novo = (ElementoMatriz*)malloc(sizeof(ElementoMatriz));
     if (novo == NULL) {
+        // da print de um standard error se de erro ao alocar memeoria
         fprintf(stderr, "Erro ao alocar memória para um novo elemento da matriz.\n");
         exit(EXIT_FAILURE);
     }
@@ -40,10 +44,12 @@ ElementoMatriz* CriaElementoMatriz(int valor) {
  * @return 
  */
 Matriz* InsereNaMatriz(Matriz* matriz, int linha, int coluna, ElementoMatriz* novo) {
+    // atribui o valor novo (elemento que vem no dos parametros) á variavel da matriz
     if (matriz->elementos[linha][coluna] == NULL) {
         matriz->elementos[linha][coluna] = novo;
     }
     else {
+        // se nao for nulo o elemento ele cria um, e da lhe o valor do proximo.
         ElementoMatriz* atual = matriz->elementos[linha][coluna];
         while (atual->proximo != NULL) {
             atual = atual->proximo;
@@ -62,19 +68,24 @@ Matriz* InsereNaMatriz(Matriz* matriz, int linha, int coluna, ElementoMatriz* no
  * @return 
  */
 Matriz* NovaMatriz(const int linhas, const int colunas, const char* filename) {
+    // abre o ficheiro
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "Erro ao abrir o arquivo %s.\n", filename);
+        fprintf(stderr, "Erro ao abrir o ficheiro %s.\n", filename);
         exit(EXIT_FAILURE);
     }
-
+    // aloca a memoria necessaria para a matriz
     Matriz* matriz = (Matriz*)malloc(sizeof(Matriz));
     if (matriz == NULL) {
         fprintf(stderr, "Erro ao alocar memória para a matriz.\n");
         exit(EXIT_FAILURE);
     }
+
+    // Dá á matriz os valores da linha e coluna que vem de parametros calculados antes
     matriz->linhas = linhas;
     matriz->colunas = colunas;
+
+    // aloca o espaço da matriz
     matriz->elementos = (ElementoMatriz***)malloc(sizeof(ElementoMatriz**) * linhas);
     if (matriz->elementos == NULL) {
         fprintf(stderr, "Erro ao alocar memória para os elementos da matriz.\n");
@@ -82,6 +93,7 @@ Matriz* NovaMatriz(const int linhas, const int colunas, const char* filename) {
     }
 
     for (int i = 0; i < linhas; i++) {
+        // aloca memoria dos elementos
         matriz->elementos[i] = (ElementoMatriz**)calloc(colunas, sizeof(ElementoMatriz*));
         if (matriz->elementos[i] == NULL) {
             fprintf(stderr, "Erro ao alocar memória para os elementos da matriz.\n");
@@ -93,10 +105,12 @@ Matriz* NovaMatriz(const int linhas, const int colunas, const char* filename) {
     for (int i = 0; i < linhas; i++) {
         for (int j = 0; j < colunas; j++) {
             if (fscanf(file, "%d;", &temp) != 1) {
-                fprintf(stderr, "Erro ao ler o arquivo.\n");
+                fprintf(stderr, "Erro ao ler o ficheiro.\n");
                 continue;
             }
+            // 
             ElementoMatriz* novo = CriaElementoMatriz(temp);
+            // insere na matriz com lkinha de i e coluna de j e o elemento novo
             matriz = InsereNaMatriz(matriz, i, j, novo);
         }
     }
@@ -117,9 +131,10 @@ Matriz* lerFicheiro(const char* filename) {
 
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "Erro ao abrir o arquivo %s.\n", filename);
+        fprintf(stderr, "Erro ao abrir o ficheiro %s.\n", filename);
         exit(EXIT_FAILURE);
     }
+    // calculo da linhas e colunas
 
     int ch;
     while ((ch = fgetc(file)) != EOF) {
@@ -135,13 +150,17 @@ Matriz* lerFicheiro(const char* filename) {
     fclose(file);
 
     if (num_linhas == 0 || num_colunas == 0) {
-        fprintf(stderr, "Erro: arquivo vazio ou formato inválido.\n");
+        fprintf(stderr, "Erro: ficheiro vazio ou formato inválido.\n");
         exit(EXIT_FAILURE);
     }
-
+    //cria a mtriz confrome o calculo da linhas e colunas
     Matriz* matriz = NovaMatriz(num_linhas, num_colunas, filename);
+
+    //DA ERRO A PARTIR DAQUI!!
     int numeros[] = { 1,2,3 };
     matriz = escreveNaMatriz(matriz, filename, true, numeros);
+
+
     return matriz;
 }
 
@@ -158,7 +177,7 @@ Matriz* lerFicheiro(const char* filename) {
 Matriz* escreveNaMatriz(Matriz* matriz, const char* filename, bool tipo_coluna_ou_linha, int array[]) {
     FILE* file = fopen(filename, "w");
     if (file == NULL) {
-        fprintf(stderr, "Erro: Falha ao abrir o arquivo %s para escrita.\n", filename);
+        fprintf(stderr, "Erro: Falha ao abrir o ficheiro %s para escrita.\n", filename);
         exit(EXIT_FAILURE);
     }
 
@@ -184,7 +203,7 @@ Matriz* escreveNaMatriz(Matriz* matriz, const char* filename, bool tipo_coluna_o
         matriz->linhas++; // Incrementa o número de linhas na matriz
     }
 
-    // Escreve a matriz no arquivo
+    // Escreve a matriz no ficheiro
     for (int i = 0; i < matriz->linhas; i++) {
             ElementoMatriz* atual = (ElementoMatriz*)malloc(sizeof(ElementoMatriz));
             atual = matriz->elementos[i][matriz->colunas];
@@ -205,13 +224,17 @@ Matriz* escreveNaMatriz(Matriz* matriz, const char* filename, bool tipo_coluna_o
  * .
  * 
  * @param matriz
- * @return 
+ * @return int 
  */
 int CalculaSomaMaxima(Matriz* matriz) {
     int somaMaxima = 0;
 
+
+    //Percorre todas a matriz 
     for (int i = 0; i < matriz->linhas; i++) {
         for (int j = 0; j < matriz->colunas; j++) {
+
+            //aloca a memoria para a matriz dos elementos escolhidos
             int** escolhidos = (int**)malloc(matriz->linhas * sizeof(int*));
             if (escolhidos == NULL) {
                 fprintf(stderr, "Erro ao alocar memória para os elementos escolhidos.\n");
@@ -223,14 +246,19 @@ int CalculaSomaMaxima(Matriz* matriz) {
                     fprintf(stderr, "Erro ao alocar memória para os elementos escolhidos.\n");
                     exit(EXIT_FAILURE);
                 }
+                // Inicializa a matriz de elementos escolhidos com zeros
                 for (int l = 0; l < matriz->colunas; l++) {
                     escolhidos[k][l] = 0;
                 }
             }
 
+
+            // Inicia a soma atual com o valor da célula atual
             int somaAtual = matriz->elementos[i][j]->valor;
+            // Marca a célula atual como escolhida
             escolhidos[i][j] = 1;
 
+            // Marca toda a linha e coluna da célula atual como escolhida
             for (int k = 0; k < matriz->linhas; k++) {
                 escolhidos[k][j] = 1;
             }
@@ -238,10 +266,14 @@ int CalculaSomaMaxima(Matriz* matriz) {
                 escolhidos[i][l] = 1;
             }
 
+            // Loop principal para calcular a soma máxima
+
             while (1) {
                 int max = 0;
                 int max_i = -1;
                 int max_j = -1;
+                // Encontra o próximo elemento não escolhido com o maior valor
+
                 for (int k = 0; k < matriz->linhas; k++) {
                     for (int l = 0; l < matriz->colunas; l++) {
                         if (!escolhidos[k][l] && matriz->elementos[k][l]->valor > max) {
@@ -251,11 +283,16 @@ int CalculaSomaMaxima(Matriz* matriz) {
                         }
                     }
                 }
+                // Se não houver mais elementos disponíveis, sai do loop
+
                 if (max_i == -1 || max_j == -1) {
                     break;
                 }
+                // Adiciona o valor máximo encontrado à soma atual e marca o elemento escolhido
                 somaAtual += max;
                 escolhidos[max_i][max_j] = 1;
+                // Marca toda a linha e coluna do elemento escolhido como escolhida
+
                 for (int k = 0; k < matriz->linhas; k++) {
                     escolhidos[k][max_j] = 1;
                 }
@@ -263,10 +300,12 @@ int CalculaSomaMaxima(Matriz* matriz) {
                     escolhidos[max_i][l] = 1;
                 }
             }
+            // Atualiza a soma máxima se a soma atual for maior
 
             if (somaAtual > somaMaxima) {
                 somaMaxima = somaAtual;
             }
+            // Liberta a memória alocada para a matriz de elementos escolhidos
 
             for (int k = 0; k < matriz->linhas; k++) {
                 free(escolhidos[k]);
